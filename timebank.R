@@ -1,5 +1,3 @@
-
-
 library(XML)
 
 ####### FUNCTIONS #######
@@ -54,31 +52,8 @@ makeAllDocsUnique = function(corpus){
 	}
 }
 
-
-##########
-
-getSentences = function(doc){
-	getNodeSet(doc,"//s")
-}
-
-printSentence = function(sentence){
-	gsub("\\n"," ",xmlValue(sentence))
-}
-
 printDocument = function(document){
 	paste(lapply(getSentences(document),printSentence), collapse=" | ")
-}
-
-getEvents = function(doc_or_sentence){
-	getNodeSet(doc_or_sentence,"//EVENT")
-}
-
-getTimes = function(doc_or_sentence){
-	getNodeSet(doc_or_sentence,"//TIMEX3")
-}
-
-getSignals = function(doc_or_sentence){
-	getNodeSet(doc_or_sentence,"//SIGNAL")
 }
 
 getEventInstances = function(top,event){ # Takes an input of type EVENT
@@ -110,10 +85,6 @@ frameInstances = function(event_instance_list){
 	sapply(y,xmlAttrs)
 }
 
-
-##########
-
-
 getSentenceEntities = function(sentences){
 	if(length(sentences) > 0){
 		for(i in 1:length(sentences)){ 
@@ -133,49 +104,95 @@ getSentenceEntities = function(sentences){
 	else print("No sentences")
 }
 
+getValue = function(nodes){lapply(nodes, function (x) xmlSApply(x,xmlValue))}
 
 
-
-####### PROGRAM ##########
+####################################################
 
 
 index = getIndex("index.txt")
 documents = getDocuments(index)
-
 makeAllDocsUnique(documents)
-
 docs = newXMLNode("documents")
 addChildren(docs,documents)
 
 
-test = getNodeSet(docs,"//MAKEINSTANCE")
-d = sapply(test,xmlAttrs) #this is just a list
+####################################################
 
-n = length(d)
-r = d[[1]]
-for(i in 2:n){
-	r = rbind(r,d[[i]])
-} #now we have a data frame 
+sentences = getNodeSet(docs,"//s")
+events = getNodeSet(docs,"//EVENT")
+instances = getNodeSet(docs,"//MAKEINSTANCE")
+times = getNodeSet(docs,"//TIMEX3")
+signals = getNodeSet(docs,"//SIGNAL")
+cardinality = getNodeSet(docs,"//MAKEINSTANCE[@cardinality]")
+modality = getNodeSet(docs,"//MAKEINSTANCE[@modality]")
+plurals = getNodeSet(docs,"//MAKEINSTANCE[@cardinality='PLURAL']")
+
+# > length(sentences)
+# [1] 2624
+# > length(events)
+# [1] 7935
+# > length(instances)
+# [1] 7940
+# > length(times)
+# [1] 1414
+# > length(signals)
+# [1] 688
+
+instanceList = lapply(instances,xmlAttrs) #this is just a list
+n = length(instanceList) # 7940
+#names(instanceList)<-c(1:length(instanceList))
+
+d = as.data.frame(t(instanceList[[1]]))
+d = data.frame()
+for(i in 1:n){
+	d = rbind.fill(
+		d,as.data.frame(t(instanceList[[i]]))
+		)
+} # Now we have a data frame
+
+summary(d)
+#     eventID          eiid             tense                         aspect    
+#  d4e30  :   2   d1ei392:   1   PAST      :2153   NONE                  :7315  
+#  d8e229 :   2   d1ei418:   1   PRESENT   :1415   PROGRESSIVE           : 190  
+#  d8e12  :   2   d1ei375:   1   NONE      :2793   PERFECTIVE            : 415  
+#  d11e2  :   2   d1ei402:   1   FUTURE    : 284   PERFECTIVE_PROGRESSIVE:  20  
+#  d14e26 :   2   d1ei382:   1   INFINITIVE: 782                                
+#  d1e20  :   1   d1ei429:   1   PRESPART  : 361                                
+#  (Other):7929   (Other):7934   PASTPART  : 152                                
+#  polarity            pos          modality     cardinality  
+#  POS:7651   VERB       :5122   would  : 127   PLURAL :   5  
+#  NEG: 289   NOUN       :2225   could  :  49   2      :   4  
+#             ADJECTIVE  : 266   may    :  31   4      :   3  
+#             PREPOSITION:  28   can    :  26   EVERY  :   2  
+#             OTHER      : 299   none   :  21   7      :   2  
+#                               (Other):  66   (Other):  14  
+#                               NA's   :7620   NA's   :7910 
 
 
-getNodeSet(docs[[1]],"//*[@*='ei426']")
+nameList = list()
+for(i in 1:n){
+	nameList[[i]] <- names(instanceList[[i]])
+	}
+table(unlist(nameList))
+     #aspect cardinality        eiid     eventID    modality    polarity 
+     #  7940          30        7940        7940         320        7940 
+     #   pos       tense 
+     #  7940        7940 
 
-plurals = getNodeSet(docs,"//MAKEINSTANCE[@pos='PLURAL']")
+xtabs(~tense + aspect, data=d)
+#             aspect
+# tense        NONE PROGRESSIVE PERFECTIVE PERFECTIVE_PROGRESSIVE
+#   PAST       2039          19         94                      1
+#   PRESENT     946         163        289                     17
+#   NONE       2764           3         24                      2
+#   FUTURE      275           5          4                      0
+#   INFINITIVE  781           0          1                      0
+#   PRESPART    360           0          1                      0
+#   PASTPART    150           0          2                      0
 
 
-sentences = getNodeSet(top,"//s")
-xmlSApply(sentences, function(x) xmlSApply(x,xmlValue))
-
-nodes = getNodeSet(top,"//MAKEINSTANCE[@tense]")
-lapply(nodes, function (x) xmlSApply(x,xmlValue))
 
 
 # xmlName([node]) # self
 # names([node]) # children
-
-
-
-
-
-
-
