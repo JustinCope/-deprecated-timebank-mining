@@ -80,6 +80,14 @@ addChildren(docs,documents)
 
 ############## Additional Functions #############
 
+getSentences = function(doc){
+	getNodeSet(doc,"//s")
+}
+
+printSentence = function(sentence){
+	gsub(" +"," ",gsub("\\n"," ",xmlValue(sentence)))
+}
+
 printDocument = function(document){
 	paste(lapply(getSentences(document),printSentence), collapse=" | ")
 }
