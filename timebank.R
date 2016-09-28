@@ -110,7 +110,7 @@ getValue = function(nodes){lapply(nodes, function (x) xmlSApply(x,xmlValue))}
 
 ####################################################
 
-cat("\n", file="index.txt", sep="", append=TRUE)
+cat("\n", file="index.txt", sep="", append=TRUE) # Maybe address this bug in the python script that generates "index.txt"?
 index = getIndex("index.txt")
 documents = getDocuments(index)
 makeAllDocsUnique(documents)
@@ -125,9 +125,9 @@ events = getNodeSet(docs,"//EVENT")
 instances = getNodeSet(docs,"//MAKEINSTANCE")
 times = getNodeSet(docs,"//TIMEX3")
 signals = getNodeSet(docs,"//SIGNAL")
-cardinality = getNodeSet(docs,"//MAKEINSTANCE[@cardinality]")
-modality = getNodeSet(docs,"//MAKEINSTANCE[@modality]")
-plurals = getNodeSet(docs,"//MAKEINSTANCE[@cardinality='PLURAL']")
+tlinks = getNodeSet(docs,"//TLINK")
+slinks = getNodeSet(docs,"//SLINK")
+alinks = getNodeSet(docs,"//ALINK")
 
 # > length(sentences)
 # [1] 2624
@@ -139,12 +139,44 @@ plurals = getNodeSet(docs,"//MAKEINSTANCE[@cardinality='PLURAL']")
 # [1] 1414
 # > length(signals)
 # [1] 688
+# > length(tlinks)
+# [1] 6418
+# > length(slinks)
+# [1] 2932
+# > length(alinks)
+# [1] 265
 
+# MAKEINSTANCE attributes
+cardinality = getNodeSet(docs,"//MAKEINSTANCE[@cardinality]")
+# length(cardinality)
+# 30                 
+plurals = getNodeSet(docs,"//MAKEINSTANCE[@cardinality='PLURAL']")
+# length(plurals)
+# 5   	
+                                  
+modality = getNodeSet(docs,"//MAKEINSTANCE[@modality]")
+# length(modality)
+# 320
+                                  
+# Converting a nodeset (instances) into a list as prerequisite for creating data frame			  
 instanceList = lapply(instances,xmlAttrs) #this is just a list
 n = length(instanceList) # 7940
 #names(instanceList)<-c(1:length(instanceList))
+                                  
+# This is one way to determine how many event instances include the optional "cardinality" and "modality" attributes.
+nameList = list()
+for(i in 1:n){
+	nameList[[i]] <- names(instanceList[[i]])
+	}
+table(unlist(nameList))
+     #aspect cardinality        eiid     eventID    modality    polarity 
+     #  7940          30        7940        7940         320        7940 
+     #   pos       tense 
+     #  7940        7940 
 
-d = as.data.frame(t(instanceList[[1]]))
+
+# Create dataframe; rbind.fill inserts the value "NA" into a cell (x,y) if the instance in row x no attribute corresponding to the name of column y
+# d = as.data.frame(t(instanceList[[1]]))
 d = data.frame()
 for(i in 1:n){
 	d = rbind.fill(
@@ -171,15 +203,7 @@ summary(d)
 #                               NA's   :7620   NA's   :7910 
 
 
-nameList = list()
-for(i in 1:n){
-	nameList[[i]] <- names(instanceList[[i]])
-	}
-table(unlist(nameList))
-     #aspect cardinality        eiid     eventID    modality    polarity 
-     #  7940          30        7940        7940         320        7940 
-     #   pos       tense 
-     #  7940        7940 
+
 
 xtabs(~tense + aspect, data=d)
 #             aspect
