@@ -1,4 +1,5 @@
 library(XML)
+require(plyr)
 
 ####### FUNCTIONS #######
 
@@ -109,7 +110,7 @@ getValue = function(nodes){lapply(nodes, function (x) xmlSApply(x,xmlValue))}
 
 ####################################################
 
-
+cat("\n", file="index.txt", sep="", append=TRUE)
 index = getIndex("index.txt")
 documents = getDocuments(index)
 makeAllDocsUnique(documents)
