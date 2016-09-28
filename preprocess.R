@@ -100,7 +100,7 @@ getEventInstances = function(top,event){ # Takes an input of type EVENT
 }
 
 getSentenceEventInstances = function(sentence){
-	x = getEvents(sentence)
+	x = getNodeSet(sentence,"//EVENT")
 	y = length(x)
 	if(y>0){
 		z <- vector("list", y)
@@ -142,7 +142,7 @@ getSentenceEntities = function(sentences){
 
 getValue = function(nodes){lapply(nodes, function (x) xmlSApply(x,xmlValue))}
 
-				  
+			  
 makeDataFrame = function(nodeSet){
 	nodeList = lapply(nodeSet,xmlAttrs)
 	n = length(nodeList)
@@ -154,6 +154,7 @@ makeDataFrame = function(nodeSet){
 	}
 	return(d)
 }
+# xmlToDataFrame				  
 
 ####################################################
 
