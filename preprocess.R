@@ -1,15 +1,22 @@
 library(XML)
 require(plyr)
 
-####### FUNCTIONS #######
 
+
+
+####### PREPROCESSING FUNCTIONS #######
+
+# requires an index file, with the name of one file to be loaded per line
+# might be replaced -- R functions for reading the contents of the working directory?
 getIndex = function(index_file){
 	strsplit(readLines(index_file), " ")[[1]]
 }
- 
+
+
 getDocument = function(file){
 	xmlRoot(xmlTreeParse(file, useInternal = TRUE))
 } # useInternal maintains the xml document, for use with XPATH searches
+
 
 getDocuments = function(index){
 	n = length(index)
@@ -24,6 +31,7 @@ getDocuments = function(index){
 	}
 }
 
+
 UniqueXID = function(timeml_node, id_name){
 	dID = xmlGetAttr(timeml_node,"DocID")
 	search = paste("//*[@", id_name, "]", sep="")
@@ -37,6 +45,7 @@ UniqueXID = function(timeml_node, id_name){
 	}}
 }
 
+
 makeUnique = function(doc){
 	dID = xmlGetAttr(doc,"DocID")
 	ids = c("eid", "eiid", "eventID", "tid", "sid", "lid", "timeID", "signalID", "eventInstanceID", "subordinatedEventInstance", "relatedToTime", "relatedToEventInstance")
@@ -46,12 +55,30 @@ makeUnique = function(doc){
 	}
 }
 
+
 makeAllDocsUnique = function(corpus){
 	n = length(corpus)
 	for(i in 1:n){
 		makeUnique(corpus[[i]])
 	}
 }
+
+
+
+
+########## Loading the files, creating the xml tree ############
+
+cat("\n", file="index.txt", sep="", append=TRUE)
+index = getIndex("index.txt")
+documents = getDocuments(index)
+makeAllDocsUnique(documents)
+docs = newXMLNode("documents")
+addChildren(docs,documents)
+
+
+
+
+############## Additional Functions #############
 
 printDocument = function(document){
 	paste(lapply(getSentences(document),printSentence), collapse=" | ")
@@ -110,9 +137,4 @@ getValue = function(nodes){lapply(nodes, function (x) xmlSApply(x,xmlValue))}
 
 ####################################################
 
-cat("\n", file="index.txt", sep="", append=TRUE)
-index = getIndex("index.txt")
-documents = getDocuments(index)
-makeAllDocsUnique(documents)
-docs = newXMLNode("documents")
-addChildren(docs,documents)
+
