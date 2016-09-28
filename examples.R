@@ -28,6 +28,10 @@ alinks = getNodeSet(docs,"//ALINK")
 # > length(alinks)
 # [1] 265
 
+
+#### Exploring the MAKEINSTANCE 
+
+
 # MAKEINSTANCE attributes
 cardinality = getNodeSet(docs,"//MAKEINSTANCE[@cardinality]")
 # length(cardinality)
@@ -39,24 +43,27 @@ plurals = getNodeSet(docs,"//MAKEINSTANCE[@cardinality='PLURAL']")
 modality = getNodeSet(docs,"//MAKEINSTANCE[@modality]")
 # length(modality)
 # 320
-                                  
+
+# # This is another way to determine how many event instances include the optional "cardinality" and "modality" attributes.
+# # I have no idea why I included it, as the methods above are much more intuitive.
+# nameList = list()
+# for(i in 1:n){
+# 	nameList[[i]] <- names(instanceList[[i]])
+# 	}
+# table(unlist(nameList))
+#      #aspect cardinality        eiid     eventID    modality    polarity 
+#      #  7940          30        7940        7940         320        7940 
+#      #   pos       tense 
+#      #  7940        7940 
+                           
+
+### MAKEINSTANCE dataframe ###
+
 # Converting a nodeset (instances) into a list as prerequisite for creating data frame			  
 instanceList = lapply(instances,xmlAttrs) #this is just a list
 n = length(instanceList) # 7940
 #names(instanceList)<-c(1:length(instanceList))
-                                  
-# This is one way to determine how many event instances include the optional "cardinality" and "modality" attributes.
-nameList = list()
-for(i in 1:n){
-	nameList[[i]] <- names(instanceList[[i]])
-	}
-table(unlist(nameList))
-     #aspect cardinality        eiid     eventID    modality    polarity 
-     #  7940          30        7940        7940         320        7940 
-     #   pos       tense 
-     #  7940        7940 
-
-
+   
 # Create dataframe; rbind.fill inserts the value "NA" into a cell (x,y) if the instance in row x no attribute corresponding to the name of column y
 # d = as.data.frame(t(instanceList[[1]]))
 d = data.frame()
@@ -83,7 +90,6 @@ summary(d)
 #             OTHER      : 299   none   :  21   7      :   2  
 #                               (Other):  66   (Other):  14  
 #                               NA's   :7620   NA's   :7910 
-
 
 
 
