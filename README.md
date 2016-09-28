@@ -14,7 +14,67 @@ N.B. The file `preprocessing.R` must be in the `/.../timebank_1_2/data/extra` di
 
 If all goes well, you now have xml tree called `docs` which you may query with XPATH / getNodeSet().  You also have at your disposal the following functions:
 
-1.More to come...
+1. printDocument: 
+
+= function(document){
+	paste(lapply(getSentences(document),printSentence), collapse=" | ")
+}
+
+2. getEventInstances 
+
+= function(top,event){ # Takes an input of type EVENT
+	eid = xmlGetAttr(event,"eid")
+	# builds a search for MAKEINSTANCE objects with attribute eventID equal to input
+	search = paste("//MAKEINSTANCE[@eventID='", eid, "']",sep="") 
+	getNodeSet(top,search) # executes search, returning hits
+}
+
+3. getSentenceEventInstances 
+= function(sentence){
+	x = getEvents(sentence)
+	y = length(x)
+	if(y>0){
+		z <- vector("list", y)
+		for(i in 1:y){
+			a = getEventInstances(sentence,x[[i]])
+			z[[i]] = c(x[[i]],a)
+		}
+		return(z)
+	}
+}
+
+4. frameInstances 
+= function(event_instance_list){
+	x = length(event_instance_list)
+	y = vector("list",x)
+	for(i in 1:x){
+		y[[i]] = event_instance_list[[i]][[2]]
+	}
+	sapply(y,xmlAttrs)
+}
+
+5. getSentenceEntities 
+= function(sentences){
+	if(length(sentences) > 0){
+		for(i in 1:length(sentences)){ 
+			sentence = sentences[[i]]
+			print(sentence)
+			events = getNodeSet(sentence,"EVENT")
+			if(length(events) > 0){
+				for(j in 1:length(events)){
+					print(events[[j]])
+					eid = xmlGetAttr(events[[j]],"eid")
+					print(eid)
+					getEventInstances(eid)
+				}
+			}
+		}
+	}
+	else print("No sentences")
+}
+
+6. getValue 
+= function(nodes){lapply(nodes, function (x) xmlSApply(x,xmlValue))}
 
 ## examples.R
 Some data structures are built as illustrations.
