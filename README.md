@@ -17,7 +17,7 @@ If all goes well, you now have xml tree called `docs` which you may query with X
 1. getSentences - Applied to an xml tree it returns all sentences within that tree as xml, 
 1. printSentence - prints a sentence
 1. printDocument - prints document 
-2. getEventInstances 
+2. getEventInstances: 
 
 = function(top,event){ # Takes an input of type EVENT
 	eid = xmlGetAttr(event,"eid")
@@ -70,8 +70,8 @@ If all goes well, you now have xml tree called `docs` which you may query with X
 	else print("No sentences")
 }
 
-6. getValue - takes xml node and returns text stripped of xml tags
-= function(nodes){lapply(nodes, function (x) xmlSApply(x,xmlValue))}
+6. getValue - takes xml node and returns text as Attribute-Value pairs
+7. makeDataFrame - takes a set of xml nodes and builds a data frame
 
 ## examples.R
 Some data structures are built as illustrations.
