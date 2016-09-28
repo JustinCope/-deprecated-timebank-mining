@@ -142,6 +142,18 @@ getSentenceEntities = function(sentences){
 
 getValue = function(nodes){lapply(nodes, function (x) xmlSApply(x,xmlValue))}
 
+				  
+makeDataFrame = function(nodeSet){
+	nodeList = lapply(nodeSet,xmlAttrs)
+	n = length(nodeList)
+	d = data.frame()
+	for(i in 1:n){
+		d = rbind.fill(
+			d,as.data.frame(t(nodeList[[i]]))
+		)
+	}
+	return(d)
+}
 
 ####################################################
 
