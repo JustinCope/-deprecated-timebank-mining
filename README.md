@@ -14,12 +14,9 @@ N.B. The file `preprocessing.R` must be in the `/.../timebank_1_2/data/extra` di
 
 If all goes well, you now have xml tree called `docs` which you may query with XPATH / getNodeSet().  You also have at your disposal the following functions:
 
-1. printDocument: 
-
-= function(document){
-	paste(lapply(getSentences(document),printSentence), collapse=" | ")
-}
-
+1. getSentences - Applied to an xml tree it returns all sentences within that tree as xml, 
+1. printSentence - prints a sentence
+1. printDocument - prints document 
 2. getEventInstances 
 
 = function(top,event){ # Takes an input of type EVENT
@@ -53,7 +50,7 @@ If all goes well, you now have xml tree called `docs` which you may query with X
 	sapply(y,xmlAttrs)
 }
 
-5. getSentenceEntities 
+5. getSentenceEntities - sentence input, 
 = function(sentences){
 	if(length(sentences) > 0){
 		for(i in 1:length(sentences)){ 
@@ -73,7 +70,7 @@ If all goes well, you now have xml tree called `docs` which you may query with X
 	else print("No sentences")
 }
 
-6. getValue 
+6. getValue - takes xml node and returns text stripped of xml tags
 = function(nodes){lapply(nodes, function (x) xmlSApply(x,xmlValue))}
 
 ## examples.R
