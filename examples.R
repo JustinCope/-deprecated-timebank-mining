@@ -59,19 +59,21 @@ modality = getNodeSet(docs,"//MAKEINSTANCE[@modality]")
 
 ### MAKEINSTANCE dataframe ###
 
-# Converting a nodeset (instances) into a list as prerequisite for creating data frame			  
-instanceList = lapply(instances,xmlAttrs) #this is just a list
-n = length(instanceList) # 7940
-#names(instanceList)<-c(1:length(instanceList))
+makeDataFrame(instances)
+
+# # Converting a nodeset (instances) into a list as prerequisite for creating data frame			  
+# instanceList = lapply(instances,xmlAttrs) #this is just a list
+# n = length(instanceList) # 7940
+# #names(instanceList)<-c(1:length(instanceList))
    
-# Create dataframe; rbind.fill inserts the value "NA" into a cell (x,y) if the instance in row x no attribute corresponding to the name of column y
-# d = as.data.frame(t(instanceList[[1]]))
-d = data.frame()
-for(i in 1:n){
-	d = rbind.fill(
-		d,as.data.frame(t(instanceList[[i]]))
-		)
-} # Now we have a data frame
+# # Create dataframe; rbind.fill inserts the value "NA" into a cell (x,y) if the instance in row x no attribute corresponding to the name of column y
+# # d = as.data.frame(t(instanceList[[1]]))
+# d = data.frame()
+# for(i in 1:n){
+# 	d = rbind.fill(
+# 		d,as.data.frame(t(instanceList[[i]]))
+# 		)
+# } # Now we have a data frame
 
 summary(d)
 #     eventID          eiid             tense                         aspect    
