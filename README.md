@@ -73,6 +73,8 @@ If all goes well, you now have xml tree called `docs` which you may query with X
 6. getValue - takes xml node and returns text as Attribute-Value pairs
 7. makeDataFrame - takes a set of xml nodes and builds a data frame
 
+
+
 ## examples.R
 Some data structures are built as illustrations.
 
